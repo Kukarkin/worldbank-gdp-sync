@@ -1,0 +1,32 @@
+name: WorldBank GDP Sync
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: |
+        pip install pandas boto3 requests
+
+    - name: Run WorldBank GDP script
+      env:
+        YANDEX_ACCESS_KEY_ID: ${{ secrets.YANDEX_ACCESS_KEY_ID }}
+        YANDEX_SECRET_ACCESS_KEY: ${{ secrets.YANDEX_SECRET_ACCESS_KEY }}
+        YANDEX_BUCKET_NAME: ${{ secrets.YANDEX_BUCKET_NAME }}
+        YANDEX_ENDPOINT_URL: 'https://storage.yandexcloud.net'
+      run: |
+        python script.py
