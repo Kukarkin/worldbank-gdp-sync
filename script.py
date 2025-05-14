@@ -1,14 +1,15 @@
 
+import os
 import requests
 import pandas as pd
 import boto3
 from io import StringIO
 from datetime import datetime, timedelta
 
-bucket_name = 'worldbank-data'
-access_key_id = 'YCAJEh-DNtL5oF0ATBKmaLGNt'
-secret_access_key = 'YCNebUMWhiFgRMl-lyHJHvurbyr2YoQ3JRjnkQ7-'
-endpoint_url = 'https://storage.yandexcloud.net'
+bucket_name = os.environ.get('YANDEX_BUCKET_NAME', 'worldbank-data')
+access_key_id = os.environ.get('YANDEX_ACCESS_KEY_ID', 'your-access-key-here')
+secret_access_key = os.environ.get('YANDEX_SECRET_ACCESS_KEY', 'your-secret-key-here')
+endpoint_url = os.environ.get('YANDEX_ENDPOINT_URL', 'https://storage.yandexcloud.net')
 
 def get_worldbank_gdp():
     url = 'https://api.worldbank.org/v2/country/all/indicator/NY.GDP.MKTP.PP.KD?format=json&per_page=20000'
@@ -16,7 +17,8 @@ def get_worldbank_gdp():
     data = response.json()
 
     if not data or len(data) < 2:
-        raise Exception('Ошибка получения данных')
+        raise Exception('Ошибка получения данных API')
+
 
     update_time = (datetime.utcnow() + timedelta(hours=3)).strftime('%Y-%m-%d %H:%M:%S')
 
@@ -44,7 +46,7 @@ def upload_to_s3(df):
                       aws_secret_access_key=secret_access_key)
 
     s3.put_object(Bucket=bucket_name, Key='worldbank_gdp.csv', Body=csv_buffer.getvalue())
-    print(f'Файл загружен в бакет {bucket_name}')
+    print(f'Файл успешно загружен в бакет {bucket_name}')
 
 if __name__ == "__main__":
     df = get_worldbank_gdp()

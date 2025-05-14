@@ -3,7 +3,7 @@ name: WorldBank GDP Sync
 
 on:
   schedule:
-    - cron: '0 11 * * *'  # Каждый день в 06:00 по Москве 
+    - cron: '0 3 * * *'  # Каждый день в 06:00 по Москве (UTC+3)
   workflow_dispatch:
 
 jobs:
@@ -24,5 +24,10 @@ jobs:
         pip install pandas boto3 requests
 
     - name: Run WorldBank GDP script
+      env:
+        YANDEX_ACCESS_KEY_ID: ${{ secrets.YANDEX_ACCESS_KEY_ID }}
+        YANDEX_SECRET_ACCESS_KEY: ${{ secrets.YANDEX_SECRET_ACCESS_KEY }}
+        YANDEX_BUCKET_NAME: ${{ secrets.YANDEX_BUCKET_NAME }}
+        YANDEX_ENDPOINT_URL: 'https://storage.yandexcloud.net'
       run: |
         python script.py
