@@ -3,7 +3,7 @@ name: WorldBank GDP Sync
 
 on:
   schedule:
-    - cron: '0 11 * * *'  # Каждый день в 300 по UTC
+    - cron: '*/5 * * * *'
   workflow_dispatch:
 
 jobs:
